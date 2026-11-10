@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>实习机会 · 名企实习直推</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif; background: #f6f7f9; color: #1a1a1a; }
+  header { background: linear-gradient(135deg, #0f2a43, #14532d); color: #fff; padding: 48px 20px 36px; text-align: center; }
+  header h1 { font-size: 2.2rem; letter-spacing: .1em; }
+  header p { margin-top: 10px; opacity: .85; font-size: 1rem; }
+  header .stats { margin-top: 16px; font-size: .9rem; opacity: .75; }
+  .toolbar { max-width: 1200px; margin: -22px auto 0; padding: 0 16px; position: relative; z-index: 2; }
+  .toolbar .bar { background: #fff; border-radius: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.10); padding: 16px; }
+  #search { width: 100%; padding: 12px 14px; font-size: 1rem; border: 1px solid #ddd; border-radius: 8px; outline: none; }
+  #search:focus { border-color: #14532d; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .filters button { padding: 8px 16px; border: 1px solid #ddd; background: #fff; border-radius: 999px; cursor: pointer; font-size: .95rem; }
+  .filters button.active { background: #14532d; color: #fff; border-color: #14532d; }
+  main { max-width: 1200px; margin: 0 auto; padding: 24px 16px 8px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  @media (max-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 768px) { .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+  .qr-fixed { position: fixed; top: 16px; right: 16px; z-index: 40; background: #fff; border-radius: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.20); padding: 10px 10px 8px; text-align: center; }
+  .qr-fixed img { width: 96px; height: 96px; display: block; }
+  .qr-fixed .lbl { font-size: .8rem; color: #14532d; font-weight: 600; margin-top: 4px; }
+  @media (max-width: 768px) { .qr-fixed img { width: 60px; height: 60px; } .qr-fixed { top: 10px; right: 10px; padding: 6px 6px 5px; } }
+  .card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,.08); cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,.14); }
+  .card img { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; display: block; background: #e8e8e8; }
+  .card .meta { padding: 12px 14px; }
+  .card .name { font-weight: 600; font-size: 1rem; }
+  .card .cat { display: inline-block; margin-top: 6px; font-size: .8rem; color: #14532d; background: #e6f2ea; border-radius: 999px; padding: 2px 10px; }
+  .empty { text-align: center; color: #888; padding: 60px 0; display: none; }
+  .more { max-width: 1200px; margin: 8px auto 0; padding: 0 16px 24px; }
+  .more .box { background: #fff7e6; border: 1px dashed #e0a800; border-radius: 12px; padding: 18px 20px; text-align: center; color: #7a5b00; }
+  footer { text-align: center; color: #888; font-size: .85rem; padding: 8px 16px 40px; line-height: 1.8; }
+  #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.88); display: none; align-items: center; justify-content: center; z-index: 50; cursor: zoom-out; }
+  #lightbox img { max-width: 94vw; max-height: 92vh; border-radius: 8px; }
+  #lightbox .cap { position: fixed; bottom: 18px; left: 0; right: 0; text-align: center; color: #fff; font-size: 1rem; }
+</style>
+</head>
+<body>
+<div class="qr-fixed"><img src="images/qr.png" alt="扫码咨询"><div class="lbl">扫码咨询</div></div>
+<header>
+  <h1>实 习 机 会</h1>
+  <p>名企实习直推 · 实地 / 远程 · 实习证明 + 推荐信</p>
+  <div class="stats">共 82 张海报 · 点击海报查看大图 · 海报内含微信二维码，扫码咨询</div>
+</header>
+<div class="toolbar">
+  <div class="bar">
+    <input id="search" type="text" placeholder="搜索公司或岗位，例如：高盛、咨询、投行、阿里…">
+    <div class="filters" id="filters"></div>
+  </div>
+</div>
+<main>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty">没有找到相关海报，换个关键词试试～</div>
+</main>
+<section class="more">
+  <div class="box">更多实习海报陆续上线中，敬请期待 ✨</div>
+</section>
+<footer>
+  实习机会 · 名企实习直推<br>
+  每张海报扫码即可咨询报名
+</footer>
+<div id="lightbox"><img id="lbimg" alt=""><div class="cap" id="lbcap"></div></div>
+<script>
+const CATS = ["全部", "单公司实习", "高端名企总览", "咨询公司", "金融·名企", "行业分类", "分类插画", "名企总览"];
+const POSTERS = [{"name": "慕尼黑再保险", "file": "images/img01.jpg", "cat": "单公司实习"}, {"name": "国新国际", "file": "images/img02.jpg", "cat": "单公司实习"}, {"name": "浙商基金", "file": "images/img03.jpg", "cat": "单公司实习"}, {"name": "上海致同", "file": "images/img04.jpg", "cat": "单公司实习"}, {"name": "中盛资本", "file": "images/img05.jpg", "cat": "单公司实习"}, {"name": "招商证券", "file": "images/img06.jpg", "cat": "单公司实习"}, {"name": "中信建投", "file": "images/img07.jpg", "cat": "单公司实习"}, {"name": "券商投行", "file": "images/img08.jpg", "cat": "高端名企总览"}, {"name": "券商投行2", "file": "images/img09.jpg", "cat": "高端名企总览"}, {"name": "互联网11", "file": "images/img10.jpg", "cat": "高端名企总览"}, {"name": "电气", "file": "images/img11.jpg", "cat": "高端名企总览"}, {"name": "风险投资", "file": "images/img12.jpg", "cat": "高端名企总览"}, {"name": "管理咨询", "file": "images/img13.jpg", "cat": "高端名企总览"}, {"name": "互联网市场品牌", "file": "images/img14.jpg", "cat": "高端名企总览"}, {"name": "国际九大投行", "file": "images/img15.jpg", "cat": "高端名企总览"}, {"name": "互联网数据分析", "file": "images/img16.jpg", "cat": "高端名企总览"}, {"name": "互联网", "file": "images/img17.jpg", "cat": "高端名企总览"}, {"name": "快消市场部", "file": "images/img18.jpg", "cat": "高端名企总览"}, {"name": "八大审计", "file": "images/img19.jpg", "cat": "高端名企总览"}, {"name": "券商资产管理", "file": "images/img20.jpg", "cat": "高端名企总览"}, {"name": "风险 财务 数据分析", "file": "images/img21.jpg", "cat": "高端名企总览"}, {"name": "券商行研2", "file": "images/img22.jpg", "cat": "高端名企总览"}, {"name": "券商行研", "file": "images/img23.jpg", "cat": "高端名企总览"}, {"name": "奢侈品汇总", "file": "images/img24.jpg", "cat": "高端名企总览"}, {"name": "14阿里", "file": "images/img25.jpg", "cat": "咨询公司"}, {"name": "13艾美仕", "file": "images/img26.jpg", "cat": "咨询公司"}, {"name": "12美世咨询", "file": "images/img27.jpg", "cat": "咨询公司"}, {"name": "11普华永道", "file": "images/img28.jpg", "cat": "咨询公司"}, {"name": "10毕马威", "file": "images/img29.jpg", "cat": "咨询公司"}, {"name": "8德勤", "file": "images/img30.jpg", "cat": "咨询公司"}, {"name": "7科尔尼", "file": "images/img31.jpg", "cat": "咨询公司"}, {"name": "5埃森哲", "file": "images/img32.jpg", "cat": "咨询公司"}, {"name": "4罗兰贝格", "file": "images/img33.jpg", "cat": "咨询公司"}, {"name": "3麦肯锡", "file": "images/img34.jpg", "cat": "咨询公司"}, {"name": "2贝恩", "file": "images/img35.jpg", "cat": "咨询公司"}, {"name": "6尼尔森", "file": "images/img36.jpg", "cat": "咨询公司"}, {"name": "14申万宏源", "file": "images/img37.jpg", "cat": "金融·名企"}, {"name": "13华泰证券", "file": "images/img38.jpg", "cat": "金融·名企"}, {"name": "12国泰君安", "file": "images/img39.jpg", "cat": "金融·名企"}, {"name": "11中信银行", "file": "images/img40.jpg", "cat": "金融·名企"}, {"name": "10中金公司", "file": "images/img41.jpg", "cat": "金融·名企"}, {"name": "9太平洋证券", "file": "images/img42.jpg", "cat": "金融·名企"}, {"name": "8德邦证券", "file": "images/img43.jpg", "cat": "金融·名企"}, {"name": "7 海通证券", "file": "images/img44.jpg", "cat": "金融·名企"}, {"name": "6中泰证券", "file": "images/img45.jpg", "cat": "金融·名企"}, {"name": "5方正证券", "file": "images/img46.jpg", "cat": "金融·名企"}, {"name": "4东方花旗", "file": "images/img47.jpg", "cat": "金融·名企"}, {"name": "3国金证券", "file": "images/img48.jpg", "cat": "金融·名企"}, {"name": "2申万宏源", "file": "images/img49.jpg", "cat": "金融·名企"}, {"name": "1中信证券", "file": "images/img50.jpg", "cat": "金融·名企"}, {"name": "15兴业证券", "file": "images/img51.jpg", "cat": "金融·名企"}, {"name": "14国盛证券", "file": "images/img52.jpg", "cat": "金融·名企"}, {"name": "13招商银行", "file": "images/img53.jpg", "cat": "金融·名企"}, {"name": "12广发银行", "file": "images/img54.jpg", "cat": "金融·名企"}, {"name": "11中信证券", "file": "images/img55.jpg", "cat": "金融·名企"}, {"name": "9特斯拉", "file": "images/img56.jpg", "cat": "金融·名企"}, {"name": "8苹果", "file": "images/img57.jpg", "cat": "金融·名企"}, {"name": "7脸书", "file": "images/img58.jpg", "cat": "金融·名企"}, {"name": "6瑞银集团", "file": "images/img59.jpg", "cat": "金融·名企"}, {"name": "4华尔街", "file": "images/img60.jpg", "cat": "金融·名企"}, {"name": "5 IDJ", "file": "images/img61.jpg", "cat": "金融·名企"}, {"name": "3高盛", "file": "images/img62.jpg", "cat": "金融·名企"}, {"name": "2摩根大通", "file": "images/img63.jpg", "cat": "金融·名企"}, {"name": "1摩根", "file": "images/img64.jpg", "cat": "金融·名企"}, {"name": "10谷歌", "file": "images/img65.jpg", "cat": "金融·名企"}, {"name": "供应链", "file": "images/img66.jpg", "cat": "行业分类"}, {"name": "设计类", "file": "images/img67.jpg", "cat": "行业分类"}, {"name": "奢侈品类", "file": "images/img68.jpg", "cat": "行业分类"}, {"name": "数据分析类", "file": "images/img69.jpg", "cat": "行业分类"}, {"name": "产品运营类", "file": "images/img70.jpg", "cat": "行业分类"}, {"name": "技术类", "file": "images/img71.jpg", "cat": "行业分类"}, {"name": "律师助理", "file": "images/img72.jpg", "cat": "行业分类"}, {"name": "审计师助理", "file": "images/img73.jpg", "cat": "行业分类"}, {"name": "商业分析", "file": "images/img74.jpg", "cat": "行业分类"}, {"name": "金融类", "file": "images/img75.jpg", "cat": "分类插画"}, {"name": "投资银行部", "file": "images/img76.jpg", "cat": "分类插画"}, {"name": "海外高端项目", "file": "images/img77.jpg", "cat": "分类插画"}, {"name": "研究生岗位", "file": "images/img78.jpg", "cat": "分类插画"}, {"name": "分析师助理", "file": "images/img79.jpg", "cat": "分类插画"}, {"name": "名企总览 1", "file": "images/img80.jpg", "cat": "名企总览"}, {"name": "名企总览 2", "file": "images/img81.jpg", "cat": "名企总览"}, {"name": "名企总览 3", "file": "images/img82.jpg", "cat": "名企总览"}];
+let activeCat = "全部";
+const grid = document.getElementById("grid");
+const empty = document.getElementById("empty");
+const filtersEl = document.getElementById("filters");
+CATS.forEach(c => {
+  const b = document.createElement("button");
+  b.textContent = c;
+  if (c === "全部") b.classList.add("active");
+  b.onclick = () => { activeCat = c; document.querySelectorAll(".filters button").forEach(x => x.classList.remove("active")); b.classList.add("active"); render(); };
+  filtersEl.appendChild(b);
+});
+function render() {
+  const q = document.getElementById("search").value.trim();
+  const list = POSTERS.filter(p => (activeCat === "全部" || p.cat === activeCat) && (!q || p.name.includes(q) || p.cat.includes(q)));
+  grid.innerHTML = "";
+  list.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `<img loading="lazy" src="${p.file}" alt="${p.name}"><div class="meta"><div class="name">${p.name}</div><span class="cat">${p.cat}</span></div>`;
+    card.onclick = () => {
+      document.getElementById("lbimg").src = p.file;
+      document.getElementById("lbcap").textContent = p.name + " · " + p.cat;
+      document.getElementById("lightbox").style.display = "flex";
+    };
+    grid.appendChild(card);
+  });
+  empty.style.display = list.length ? "none" : "block";
+}
+document.getElementById("search").addEventListener("input", render);
+document.getElementById("lightbox").onclick = () => { document.getElementById("lightbox").style.display = "none"; };
+render();
+</script>
+</body>
+</html>
